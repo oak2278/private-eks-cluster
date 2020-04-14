@@ -4,9 +4,9 @@ CloudFormation template and associated shell script to create a VPC, an EKS clus
 
 ## Overview
 
-This collection of CloudFormation templates and Bash shell scripts will deploy an EKS cluster into a VPC with no IGW or NAT Gateway attached.  
-To do this it will create a VPC which has VPC endpoints configured for EC2 and ECR.  It will also create a VPC endpoint to a web proxy that you 
-expose via an Endpoint service.  **Note**: this is not required for a private EKS cluster but its assumed you'll want to pull containers from 
+This collection of CloudFormation templates and Bash shell scripts will deploy an EKS cluster into a VPC with no IGW or NAT Gateway attached.
+To do this it will create a VPC which has VPC endpoints configured for EC2 and ECR.  It will also create a VPC endpoint to a web proxy that you
+expose via an Endpoint service.  **Note**: this is not required for a private EKS cluster but its assumed you'll want to pull containers from
 Docker Hub, GCR.io, etc so the proxy server is configured.
 
 With the VPC environment and permissions prepared the shell script will provision an EKS cluster with logging enabled and no public endpoint.
@@ -26,7 +26,7 @@ You should only need to edit the variable definitions found in `variables.sh`.  
  - INSTANCE_TYPE, the instance type to be used for the worker nodes
  - S3_STAGING_LOCATION, an S3 bucket name and optional prefix to which CloudFormation templates and a kubectl binary will be uploaded
 
- Once these values are set you can execute `launch_all.sh` and get a coffee.  This will take approximately 10 min to create the enviornment, 
+ Once these values are set you can execute `launch_all.sh` and get a coffee.  This will take approximately 10 min to create the environment,
  cluster, and worker nodes.
 
  Once its completed you will have an EKS cluster that you can review using the AWS console or CLI.  You can also remotely access your VPC using
@@ -46,16 +46,16 @@ kube-proxy   3         3         3       3            3           <none>        
 
 There you go - you now have an EKS cluster in a private VPC!
 
-## Under the covers 
-Amazon EKS is managed upstream K8s. So all the requirements and capabilities of Kubernetes apply. This is to say that when you create an EKS 
-cluster you are given either a private or public (or both) K8s master mode, managed for you as a service. When you create EC2 instances, 
-hopefully as part of an auto scaling group, those nodes will need to be able to authenticate into the K8s master node and begun becoming 
-managed by the master. The node runs the standard Kubelet and Docker daemon and will need the master's name and CA certificate. To do thus 
-the Kubelet will query the EKS service or you can provide these as arguments to the bootstrap.sh. After connecting to the master it will 
-receive instruction to launch daemon sets. To do this Kubelet and Docker will need to authenticate themselves into ECR wherethe DS images are 
-probably kept. Please note that the 1.13 version of Kubelet is compatible with VPC endpoints for ECR but 1.11 and 1.12 will require a proxy 
-server to reach ecr.REGION.amazonaws.com.  After pulling down the daemon sets your cluster should be stable and ready for use. For details 
-about configuring proxy servers for Kubelet etc please check out the source code. 
+## Under the covers
+Amazon EKS is managed upstream K8s. So all the requirements and capabilities of Kubernetes apply. This is to say that when you create an EKS
+cluster you are given either a private or public (or both) K8s master mode, managed for you as a service. When you create EC2 instances,
+hopefully as part of an auto scaling group, those nodes will need to be able to authenticate into the K8s master node and begun becoming
+managed by the master. The node runs the standard Kubelet and Docker daemon and will need the master's name and CA certificate. To do thus
+the Kubelet will query the EKS service or you can provide these as arguments to the bootstrap.sh. After connecting to the master it will
+receive instruction to launch daemon sets. To do this Kubelet and Docker will need to authenticate themselves into ECR wherethe DS images are
+probably kept. Please note that the 1.13 version of Kubelet is compatible with VPC endpoints for ECR but 1.11 and 1.12 will require a proxy
+server to reach ecr.REGION.amazonaws.com.  After pulling down the daemon sets your cluster should be stable and ready for use. For details
+about configuring proxy servers for Kubelet etc please check out the source code.
 
 ## Development notes
 ### configure proxy for docker daemon
